@@ -85,9 +85,28 @@
         }
     };
 
+    let drawHourHand = function () {
+        var date = new Date();
+        var hour = date.getHours();
+        var minsOffset = Math.floor(date.getMinutes() / 12);
+        var hourOffset = (hour - 6)*5;
+        var handOffset = 240 + hourOffset + minsOffset;
+        drawCircleLine(createCircleLine(centerX, yHourTickOffset, tickRadius - 22, handOffset, 38));
+    };
+
+    let drawMinuteHand = function () {
+        var date = new Date();
+        var min = date.getMinutes() + 240;
+        drawCircleLine(createCircleLine(centerX, yMinuteTickOffset, tickRadius - 22, min, 38)); 
+    };
+
     g.clear();
+    // do once
     drawTicks();
+    // do once per minute;
     drawMarker();
+    drawHourHand();
+    drawMinuteHand();
 
     Bangle.setUI(
         {
