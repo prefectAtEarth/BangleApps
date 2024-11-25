@@ -1,78 +1,102 @@
-const centerX = g.getWidth() / 2;
-const yHourTickOffset = 200;
-const yMinuteTickOffset = 264;
+{
+    const centerX = g.getWidth() / 2;
+    const yHourTickOffset = 200;
+    const yMinuteTickOffset = 264;
+    const tickRadius = g.getWidth()-10;
 
-function degreeToRadian(degree) {
-    return (degree * Math.PI / 180);
-}
+    let degreeToRadian = function (degree) {
+        return (degree * Math.PI / 180);
+    };
 
-function xFromAngle(radius, angle) {
-    if (![90.0, 270.0].includes(angle)) {
-        return (Math.round(radius * Math.cos(degreeToRadian(angle))));
-    } else {
-        return 0;
-    }
-}
-
-function yFromAngle(radius, angle) {
-    if (![360.0, 180.0, 0.0].includes(angle)) {
-        return (Math.round(radius * Math.sin(degreeToRadian(angle))));
-    } else {
-        return 0;
-    }
-}
-
-function drawCircleLine(line) {
-    g.drawLineAA(line.xStart, line.yStart, line.xEnd, line.yEnd);
-}
-
-function createCircleLine(circleX, circleY, circleR, angle, length) {
-    var yStart = yFromAngle(circleR, angle);
-    var yEnd = yFromAngle((circleR - length), angle);
-    var xStart = xFromAngle(circleR, angle);
-    var xEnd = xFromAngle((circleR - length), angle);
-
-    const line = { xStart: xStart + circleX, xEnd: xEnd + circleX, yStart: yStart + circleY, yEnd: yEnd + circleY };
-    return line;
-}
-
-function drawTicks() {
-    for (i = 240; i <= 300; i += 2.5) {
-        // draw hour ticks
-        var length = 8;
-        if (i % 5 == 0) {
-            length = 15;
+    let xFromAngle = function (radius, angle) {
+        if (![90.0, 270.0].includes(angle)) {
+            return (Math.round(radius * Math.cos(degreeToRadian(angle))));
+        } else {
+            return 0;
         }
-        drawCircleLine(createCircleLine(88, 200, 176, i, length));
+    };
 
-        // draw minute ticks
-        var minLength = 8;
-        if (i % 10 == 0) {
-            minLength = 15;
+    let yFromAngle = function (radius, angle) {
+        if (![360.0, 180.0, 0.0].includes(angle)) {
+            return (Math.round(radius * Math.sin(degreeToRadian(angle))));
+        } else {
+            return 0;
         }
-        if (i % 5 == 0) {
-            drawCircleLine(createCircleLine(88, 264, 176, i, minLength));
+    };
+
+    let drawCircleLine = function (line) {
+        g.drawLineAA(line.xStart, line.yStart, line.xEnd, line.yEnd);
+    };
+
+    let createCircleLine = function (circleX, circleY, circleR, angle, length) {
+        var yStart = yFromAngle(circleR, angle);
+        var yEnd = yFromAngle((circleR - length), angle);
+        var xStart = xFromAngle(circleR, angle);
+        var xEnd = xFromAngle((circleR - length), angle);
+
+        const line = { xStart: xStart + circleX, xEnd: xEnd + circleX, yStart: yStart + circleY, yEnd: yEnd + circleY };
+        return line;
+    };
+
+    let drawTicks = function () {
+        var currentFg = g.getColor();
+        for (i = 240; i <= 300; i += 2.5) {
+            // draw hour ticks
+            var length = 8;
+            if (i % 5 == 0) {
+                length = 15;
+            }
+            if (i >= 285) {
+                g.setColor(1,0,0);
+            }
+            drawCircleLine(createCircleLine(centerX, yHourTickOffset, tickRadius, i, length));
+
+            // draw minute ticks
+            var minLength = 8;
+            if (i % 15 == 0) {
+                minLength = 15;
+            }
+            if (i % 5 == 0) {
+                drawCircleLine(createCircleLine(centerX, yMinuteTickOffset, tickRadius, i, minLength));
+            }
         }
-    }
-}
+        g.setColor(currentFg);
+    };
 
-function drawHourMarker() {
-    var date = new Date();
-    var hourMarker = ["6", "9", "12", "15", "18"];
-    var angles = [240, 255, 270, 285, 300];
-    if (date.getHours() < 6 || date.getHours() > 17) {
-        hourMarker = ["18", "21", "0", "3", "6"];
-    }
-    for (i = 0; i < hourMarker.length; i++) {
-        var x = xFromAngle((176 - 22), angles[i]) + centerX;
-        var y = yFromAngle((176 - 22), angles[i]) + yHourTickOffset;
-        g.setFontAlign(0, 0);
-        g.drawString(hourMarker[i], x, y);
-        console.log("Text:", hourMarker[i], x, y);
-    }
-}
+    let drawMarker = function () {
+        var date = new Date();
+        var hourMarker = ["6", "9", "12", "15", "18"];
+        var minuteMarker = ["0", "15", "30", "45", "60"];
+        var angles = [240, 255, 270, 285, 300];
+        if (date.getHours() < 6 || date.getHours() > 17) {
+            hourMarker = ["18", "21", "0", "3", "6"];
+        }
+        for (i = 0; i < angles.length; i++) {
+            // draw hour marker
+            var xH = xFromAngle((tickRadius - 22), angles[i]) + centerX;
+            var yH = yFromAngle((tickRadius - 22), angles[i]) + yHourTickOffset;
+            g.setFontAlign(0, 0);
+            g.drawString(hourMarker[i], xH, yH);
+            // draw minute marker
+            var xM = xFromAngle((tickRadius - 22), angles[i]) + centerX;
+            var yM = yFromAngle((tickRadius - 22), angles[i]) + yMinuteTickOffset;
+            g.setFontAlign(0, 0);
+            g.drawString(minuteMarker[i], xM, yM);
+        }
+    };
 
-g.reset();
-g.clear();
-drawTicks();
-drawHourMarker();
+    g.clear();
+    drawTicks();
+    drawMarker();
+
+    Bangle.setUI(
+        {
+            mode: "clock",
+            remove: function () {
+            }
+        }
+    );
+
+    Bangle.loadWidgets();
+    require("widget_utils").show();
+}
