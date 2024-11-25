@@ -2,7 +2,20 @@
     const centerX = g.getWidth() / 2;
     const yHourTickOffset = 200;
     const yMinuteTickOffset = 264;
-    const tickRadius = g.getWidth()-10;
+    const tickRadius = g.getWidth() - 10;
+
+    let drawTimeout;
+
+    let queueDrawTime = function () {
+        if (drawTimeout) clearTimeout(drawTimeout);
+        drawTimeout = setTimeout(function () {
+            drawTimeout = undefined;
+            g.clearRect(0, 0 + 24, g.getWidth(), g.getHeight());
+            drawTicks();
+            drawMarker();
+            drawTime();
+        }, 60000 - (Date.now() % 60000));
+    };
 
     let degreeToRadian = function (degree) {
         return (degree * Math.PI / 180);
@@ -47,7 +60,7 @@
                 length = 15;
             }
             if (i >= 285) {
-                g.setColor(1,0,0);
+                g.setColor(1, 0, 0);
             }
             drawCircleLine(createCircleLine(centerX, yHourTickOffset, tickRadius, i, length));
 
@@ -85,33 +98,30 @@
         }
     };
 
-    let drawHourHand = function () {
+    let drawTime = function () {
         var date = new Date();
         var hour = date.getHours();
         var minsOffset = Math.floor(date.getMinutes() / 12);
-        var hourOffset = (hour - 6)*5;
+        var hourOffset = (hour - 6) * 5;
         var handOffset = 240 + hourOffset + minsOffset;
         drawCircleLine(createCircleLine(centerX, yHourTickOffset, tickRadius - 22, handOffset, 38));
-    };
-
-    let drawMinuteHand = function () {
-        var date = new Date();
         var min = date.getMinutes() + 240;
-        drawCircleLine(createCircleLine(centerX, yMinuteTickOffset, tickRadius - 22, min, 38)); 
+        drawCircleLine(createCircleLine(centerX, yMinuteTickOffset, tickRadius - 22, min, 38));
+
+        queueDrawTime();
     };
 
     g.clear();
     // do once
     drawTicks();
-    // do once per minute;
     drawMarker();
-    drawHourHand();
-    drawMinuteHand();
+    drawTime();
 
     Bangle.setUI(
         {
             mode: "clock",
             remove: function () {
+                if (drawTimeout) clearTimeout(drawTimeout);
             }
         }
     );
