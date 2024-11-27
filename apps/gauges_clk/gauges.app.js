@@ -10,7 +10,7 @@
         if (drawTimeout) clearTimeout(drawTimeout);
         drawTimeout = setTimeout(function () {
             drawTimeout = undefined;
-            g.clearRect(0, 0 + 24, g.getWidth(), g.getHeight());
+            g.clearRect(0, 24, g.getWidth(), g.getHeight());
             drawTicks();
             drawMarker();
             drawTime();
@@ -42,21 +42,20 @@
     };
 
     let createCircleLine = function (circleX, circleY, circleR, angle, length) {
-        var yStart = yFromAngle(circleR, angle);
-        var yEnd = yFromAngle((circleR - length), angle);
-        var xStart = xFromAngle(circleR, angle);
-        var xEnd = xFromAngle((circleR - length), angle);
+        const yStart = yFromAngle(circleR, angle);
+        const yEnd = yFromAngle((circleR - length), angle);
+        const xStart = xFromAngle(circleR, angle);
+        const xEnd = xFromAngle((circleR - length), angle);
 
-        const line = { xStart: xStart + circleX, xEnd: xEnd + circleX, yStart: yStart + circleY, yEnd: yEnd + circleY };
-        return line;
+        return {xStart: xStart + circleX, xEnd: xEnd + circleX, yStart: yStart + circleY, yEnd: yEnd + circleY};
     };
 
     let drawTicks = function () {
-        var currentFg = g.getColor();
-        for (i = 240; i <= 300; i += 2.5) {
+        const currentFg = g.getColor();
+        for (let i = 240; i <= 300; i += 2.5) {
             // draw hour ticks
-            var length = 8;
-            if (i % 5 == 0) {
+            let length = 8;
+            if (i % 5 === 0) {
                 length = 15;
             }
             if (i >= 285) {
@@ -65,11 +64,11 @@
             drawCircleLine(createCircleLine(centerX, yHourTickOffset, tickRadius, i, length));
 
             // draw minute ticks
-            var minLength = 8;
-            if (i % 15 == 0) {
+            let minLength = 8;
+            if (i % 15 === 0) {
                 minLength = 15;
             }
-            if (i % 5 == 0) {
+            if (i % 5 === 0) {
                 drawCircleLine(createCircleLine(centerX, yMinuteTickOffset, tickRadius, i, minLength));
             }
         }
@@ -77,35 +76,35 @@
     };
 
     let drawMarker = function () {
-        var date = new Date();
-        var hourMarker = ["6", "9", "12", "15", "18"];
-        var minuteMarker = ["0", "15", "30", "45", "60"];
-        var angles = [240, 255, 270, 285, 300];
+        const date = new Date();
+        let hourMarker = ["6", "9", "12", "15", "18"];
+        const minuteMarker = ["0", "15", "30", "45", "60"];
+        const angles = [240, 255, 270, 285, 300];
         if (date.getHours() < 6 || date.getHours() > 17) {
             hourMarker = ["18", "21", "0", "3", "6"];
         }
-        for (i = 0; i < angles.length; i++) {
+        for (let i = 0; i < angles.length; i++) {
             // draw hour marker
-            var xH = xFromAngle((tickRadius - 22), angles[i]) + centerX;
-            var yH = yFromAngle((tickRadius - 22), angles[i]) + yHourTickOffset;
+            const xH = xFromAngle((tickRadius - 22), angles[i]) + centerX;
+            const yH = yFromAngle((tickRadius - 22), angles[i]) + yHourTickOffset;
             g.setFontAlign(0, 0);
             g.drawString(hourMarker[i], xH, yH);
             // draw minute marker
-            var xM = xFromAngle((tickRadius - 22), angles[i]) + centerX;
-            var yM = yFromAngle((tickRadius - 22), angles[i]) + yMinuteTickOffset;
+            const xM = xFromAngle((tickRadius - 22), angles[i]) + centerX;
+            const yM = yFromAngle((tickRadius - 22), angles[i]) + yMinuteTickOffset;
             g.setFontAlign(0, 0);
             g.drawString(minuteMarker[i], xM, yM);
         }
     };
 
     let drawTime = function () {
-        var date = new Date();
-        var hour = date.getHours();
-        var minsOffset = Math.floor(date.getMinutes() / 12);
-        var hourOffset = (hour - 6) * 5;
-        var handOffset = 240 + hourOffset + minsOffset;
+        const date = new Date();
+        const hour = date.getHours();
+        const minutesOffset = Math.floor(date.getMinutes() / 12);
+        const hourOffset = (hour - 6) * 5;
+        const handOffset = 240 + hourOffset + minutesOffset;
         drawCircleLine(createCircleLine(centerX, yHourTickOffset, tickRadius - 22, handOffset, 38));
-        var min = date.getMinutes() + 240;
+        const min = date.getMinutes() + 240;
         drawCircleLine(createCircleLine(centerX, yMinuteTickOffset, tickRadius - 22, min, 38));
 
         queueDrawTime();
