@@ -1,0 +1,19 @@
+{ "id": "pcbBinClock",
+  "name": "PCB Binary Watchface",
+  "shortName":"pcbBinClock",
+  "version":"0.1",
+  "description": "Another binary watchface showing time in a geeky way, mounted on a PCB",
+  "icon": "pcbBinIcon.png",
+  "screenshots": [
+    { "url": "screenshot_time1.png"}
+  ],
+  "type": "clock",
+  "tags": "pcb, binary, watchface, clock",
+  "supports" : ["BANGLEJS2"],
+  "allow_emulator": true,
+  "readme": "README.md",
+  "storage": [
+    {"name":"pcbBinClock.app.js","url":"pcbBinClock.app.js"},
+    {"name":"pcbBinClock.img","url":"pcbBinClock.icon.js","evaluate":true}
+  ]
+}
