@@ -113,7 +113,7 @@
   };
 
   // a single LED
-  let drawLed = function(startX, startY, state) {
+  let drawLed = function(startX, startY, on) {
     g.setColor(white);
     // vertical solder points of leds
     g.fillRect(startX + 1, startY - 4, startX + 3, startY + 25);
@@ -125,7 +125,7 @@
     g.fillRect(startX - 4, startY + 17, startX + 17, startY + 19);
 
     // led in use
-    if (state == true) {
+    if (on == true) {
       g.setColor(ledBlue);
     } else {
       // led, not in use
@@ -139,11 +139,32 @@
   };
 
   let drawLeds = function(leds) {
+    var dt = new Date();
+    var h = dt.getHours();
+    var h_rest = h;
+    var m = dt.getMinutes();
+    var m_rest = m;
     hourLeds.map((led) => {
-      drawLed(led.startX, hourLedsY, led.on);
+      var on;
+      rest = h_rest - led.value;
+      if (rest >= 0) {
+        h_rest = rest;
+        on = true;
+      } else {
+        on = false;
+      }
+      drawLed(led.startX, hourLedsY, on);
     });
     minLeds.map((led) => {
-      drawLed(led.startX, minLedsY, led.on);
+      var on;
+      rest = m_rest - led.value;
+      if (rest >= 0) {
+        m_rest = rest;
+        on = true;
+      } else {
+        on = false;
+      }
+      drawLed(led.startX, minLedsY, on);
     });
   };
 
@@ -161,7 +182,7 @@
   });
   // dead resistor, no function (yet)
   drawHRes(50, 83, gray);
-  
+
   // Battery low -> red, Battery ok -> black
   var battery = E.getBattery();
   if (battery > 20) {
