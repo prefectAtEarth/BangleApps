@@ -5,7 +5,7 @@
   "description": "Another binary watchface showing time in a geeky way, mounted on a PCB",
   "icon": "pcbBinIcon.png",
   "screenshots": [
-    { "url": "screenshot_time1.png"}
+    { "url": "screenshot_time_0909.png"}
   ],
   "type": "clock",
   "tags": "pcb, binary, watchface, clock",
