@@ -1,4 +1,5 @@
 {
+  // get current colours to reset them later to draw widgets
   var fg = g.getColor();
   var bg = g.getBgColor();
 
@@ -138,7 +139,7 @@
     g.drawRect(startX, startY, startX + 14, startY + 21);
   };
 
-  let drawLeds = function(leds) {
+  let drawTime = function(leds) {
     var dt = new Date();
     var h = dt.getHours();
     var h_rest = h;
@@ -166,6 +167,17 @@
       }
       drawLed(led.startX, minLedsY, on);
     });
+    queueDrawTime();
+  };
+
+  let drawTimeout;
+
+  let queueDrawTime = function() {
+    if (drawTimeout) clearTimeout(drawTimeout);
+    drawTimeout = setTimeout(function() {
+      drawTimeout = undefined;
+      drawTime();
+    }, 60000 - (Date.now() % 60000));
   };
 
   // ---- DECORATION ----
@@ -183,7 +195,13 @@
   // dead resistor, no function (yet)
   drawHRes(50, 83, gray);
 
-  // Battery low -> red, Battery ok -> black
+  // WIP
+  // BLE connection -> blue, no connection -> black
+  drawVRes(19, 44, blue);
+
+  // ----- END DECORATION ----
+
+  // Battery low -> red, Battery ok -> green
   var battery = E.getBattery();
   if (battery > 20) {
     drawHRes(106, 83, green);
@@ -191,15 +209,19 @@
     drawHRes(106, 83, red);
   }
 
-  // WIP: draw Leds with time
-  drawLeds();
+  drawTime();
 
+  Bangle.setUI({
+    mode: "clock",
+    remove: function() {
+      if (drawTimeout) clearTimeout(drawTimeout);
+      require("widget_utils").show();
+    }
+  });
 
-  // WIP
-  // BLE connection -> blue, no connection -> black
-  drawVRes(19, 44, blue);
-
+  Bangle.loadWidgets();
   // reset colors;
   g.setColor(fg);
   g.setBgColor(bg);
+  require("widget_utils").swipeOn();
 }
